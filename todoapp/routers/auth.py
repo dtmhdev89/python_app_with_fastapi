@@ -9,15 +9,15 @@ from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm, \
     OAuth2PasswordBearer
 from jose import jwt, JWTError
-
+from settings import env_settings
 
 router = APIRouter(
     prefix="/auth",
     tags=["auth"]
 )
 
-SECRET_KEY = "4f68d8b21366f44c22364b9b5489ce323088174bb93b11ee3f268b5c0da1fbac"
-ALGORITHM = "HS256"
+SECRET_KEY = env_settings.AUTH_SECRET_KEY
+ALGORITHM = env_settings.AUTH_ALGORITHM
 
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated="auto")
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/token")
