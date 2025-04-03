@@ -1,15 +1,15 @@
 from datetime import timedelta, timezone, datetime
 from fastapi import APIRouter, Depends, status, HTTPException
-from pydantic import BaseModel
-from models import Users
+from pydantic import BaseModel, Field
+from todoapp.models import Users
+from todoapp.database import SessionLocal
+from todoapp.settings import env_settings
 from passlib.context import CryptContext
-from database import SessionLocal
 from typing import Annotated
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm, \
     OAuth2PasswordBearer
 from jose import jwt, JWTError
-from settings import env_settings
 
 router = APIRouter(
     prefix="/auth",
@@ -30,6 +30,7 @@ class CreateUserRequest(BaseModel):
     last_name: str
     password: str
     role: str
+    phone_number: str = Field(min_length=0)
 
 
 class Token(BaseModel):
@@ -113,6 +114,7 @@ async def create_user(
         first_name=create_user_request.first_name,
         last_name=create_user_request.last_name,
         role=create_user_request.role,
+        phone_number=create_user_request.phone_number,
         hashed_password=bcrypt_context.hash(create_user_request.password),
         is_active=True
     )

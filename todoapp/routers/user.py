@@ -3,9 +3,9 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 from passlib.context import CryptContext
-from database import SessionLocal
-from .auth import get_current_user
-from models import Users
+from todoapp.database import SessionLocal
+from todoapp.routers.auth import get_current_user
+from todoapp.models import Users
 
 
 router = APIRouter(

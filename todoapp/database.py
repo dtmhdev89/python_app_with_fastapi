@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from settings import env_settings
+from todoapp.settings import env_settings
 
 # For sqlite
 # SQLALCHEMY_DATABASE_URL = "sqlite:///./todosapp.db"

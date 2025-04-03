@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+import os
 
 
 class Settings(BaseSettings):
@@ -11,7 +12,7 @@ class Settings(BaseSettings):
     AUTH_ALGORITHM: str
 
     class Config:
-        env_file = ".env"
+        env_file = os.environ.get('ENV_FILE_PATH')
 
 
 env_settings = Settings()
