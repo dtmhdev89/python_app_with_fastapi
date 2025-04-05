@@ -99,7 +99,7 @@ async def update_todo(
             detail="Authetication failed"
         )
     todo_model = db.query(Todos).filter(Todos.id == todo_id)\
-        .filter(Todos.owner == user.get("id"))\
+        .filter(Todos.owner_id == user.get("id"))\
         .first()
     if todo_model is None:
         raise HTTPException(

@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from passlib.context import CryptContext
 from todoapp.database import SessionLocal
 from todoapp.routers.auth import get_current_user
@@ -29,6 +29,8 @@ user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
 class UserProfile(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     email: str
     username: str
     first_name: str
@@ -42,7 +44,7 @@ class UpdateUserPasswordForm(BaseModel):
     password_confirmation: str = Field(min_length=6)
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=UserProfile)
+@router.get("/", status_code=status.HTTP_200_OK)
 async def get_user(
     user: user_dependency,
     db: db_dependency
@@ -54,8 +56,10 @@ async def get_user(
         )
     
     user_model = db.query(Users).filter(Users.id == user.get("id")).first()
-
-    return user_model
+    if user_model is None:
+        return None
+    
+    return UserProfile.model_validate(user_model)
 
 
 @router.put("/password", status_code=status.HTTP_204_NO_CONTENT)
