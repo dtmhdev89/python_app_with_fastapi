@@ -1,12 +1,13 @@
 from todoapp.test.utils import app, client, override_get_db, \
     override_get_current_user, TestingSessionLocal
-from fastapi import status
+from fastapi import status, HTTPException
 from todoapp.routers.auth import get_db, authenticate_user, \
     create_access_token, SECRET_KEY, ALGORITHM, \
     get_current_user
 from jose import jwt
 from datetime import timedelta
 import asyncio
+import pytest
 
 
 app.dependency_overrides[get_db] = override_get_db
@@ -53,6 +54,7 @@ def test_create_access_token():
     assert decoded_token['role'] == role
 
 
+@pytest.mark.asyncio
 async def test_get_current_user_valid_token():
     encode = {
         'sub': 'testuser',
@@ -90,3 +92,17 @@ def test_get_current_user_valid_token_with_built_in_asyncio():
             }
     
     asyncio.run(inner_test())
+
+
+@pytest.mark.asyncio
+async def test_get_current_user_missing_payload():
+    encode = {"role": "user"}
+
+    token = jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
+
+    # context manager
+    with pytest.raises(HTTPException) as excinfo:
+        await get_current_user(token=token)
+
+    assert excinfo.value.status_code == status.HTTP_401_UNAUTHORIZED
+    assert excinfo.value.detail == "Could not validate user"
