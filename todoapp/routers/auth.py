@@ -1,5 +1,8 @@
+import os
 from datetime import timedelta, timezone, datetime
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status, HTTPException, \
+    Request
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from todoapp.models import Users
 from todoapp.database import SessionLocal
@@ -48,7 +51,23 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
+templates_dir = os.path.join("todoapp", "templates")
+templates = Jinja2Templates(directory=templates_dir)
 
+# ## Pages ###
+
+
+@router.get("/login-page")
+def render_login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
+@router.get("/register-page")
+def render_register_page(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
+
+
+# ## Endpoints ###
 def authenticate_user(username: str, password: str, db):
     user = db.query(Users).filter(Users.username == username).first()
     if not user:

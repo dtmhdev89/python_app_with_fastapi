@@ -173,3 +173,4 @@ cython_debug/
 # Custom
 todoapp/todos.db
 .env_test
+todoapp/.DS_Store
